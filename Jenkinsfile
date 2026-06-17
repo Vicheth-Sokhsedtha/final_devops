@@ -22,11 +22,11 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Clean build and run all tests
-                        bat 'mvn clean package -DskipTests=false'
+                        // Clean build and run all tests using Maven Wrapper (no need to install Maven)
+                        bat 'mvnw.cmd clean package -DskipTests=false'
 
                         // Run tests explicitly with test profile (SQLite)
-                        bat 'mvn test'
+                        bat 'mvnw.cmd test'
 
                         echo 'Build and all tests passed successfully.'
                     } catch (Exception e) {
