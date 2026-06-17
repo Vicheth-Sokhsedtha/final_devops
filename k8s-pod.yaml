@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vicheth-sokhsedtha-pod
+  labels:
+    app: id-card-system
+spec:
+  containers:
+    # Web Server Container: Spring Boot + Nginx + SSH
+    - name: web-server
+      image: vicheth-sokhsedtha-web:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 8080   # Nginx listening on 8080 proxying to Spring Boot on 8080
+        - containerPort: 2222   # SSH
+      env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://127.0.0.1:3306/B-Vicheth_Sokhsedtha-db"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "Hello@123"
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: "update"
+      volumeMounts:
+        - name: app-photos
+          mountPath: /app/uploads/photos
+
+    # MySQL Database Container
+    - name: mysql-db
+      image: mysql:8.0
+      ports:
+        - containerPort: 3306
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "Hello@123"
+        - name: MYSQL_DATABASE
+          value: "B-Vicheth_Sokhsedtha-db"
+      volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      livenessProbe:
+        exec:
+          command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -pHello@123
+        initialDelaySeconds: 30
+        periodSeconds: 10
+
+  volumes:
+    - name: mysql-data
+      emptyDir: {}
+    - name: app-photos
+      emptyDir: {}
