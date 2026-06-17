@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        // Email to CC when build fails
+        // Email to CC when build fails or succeeds
         CC_EMAIL = 'srengty@gmail.com'
     }
 
@@ -86,9 +86,59 @@ Error Details: ${e.message}
 
     post {
         success {
+            // Send CC email to srengty@gmail.com on successful deployment
+            mail(
+                to: "${CC_EMAIL}",
+                subject: "BUILD SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                body: """
+Build Success Notification
+===========================
+Project: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build URL: ${env.BUILD_URL}
+Status: SUCCESS
+
+The pipeline completed successfully:
+  ✔ Checkout
+  ✔ Build & Test
+  ✔ Deploy with Ansible
+
+-- Jenkins
+                """.stripIndent().trim()
+            )
+            echo "Sent success notification (CC: ${CC_EMAIL})"
             echo 'Pipeline completed successfully: Build -> Test -> Deploy'
         }
         failure {
+            // Get the email of the developer who committed the last change
+            def developerEmail = bat(
+                script: 'git log -1 --format="%%ae"',
+                returnStdout: true
+            ).trim()
+
+            // Send email notification:
+            //   To: developer who committed the error
+            //   CC: srengty@gmail.com
+            mail(
+                to: developerEmail,
+                cc: "${CC_EMAIL}",
+                subject: "BUILD FAILED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+                body: """
+Build Failure Notification
+===========================
+Project: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+Build URL: ${env.BUILD_URL}
+Status: FAILED
+
+The pipeline has failed. Please review the changes and fix the issue.
+
+Commit Author: ${developerEmail}
+
+-- Jenkins
+                """.stripIndent().trim()
+            )
+            echo "Sent failure notification to: ${developerEmail} (CC: ${CC_EMAIL})"
             echo 'Pipeline failed. Check logs and email notifications for details.'
         }
     }
