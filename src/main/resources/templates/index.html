@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ID Card Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+               background: #f0f2f5; padding: 40px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #1d4ed8; margin-bottom: 10px; }
+        .subtitle { color: #6b7280; margin-bottom: 30px; }
+        .endpoints { display: grid; gap: 16px; }
+        .card { background: #fff; border-radius: 12px; padding: 20px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .card h3 { color: #111827; margin-bottom: 8px; }
+        .card p { color: #6b7280; font-size: 14px; margin-bottom: 12px; }
+        .card code { background: #f3f4f6; padding: 4px 8px; border-radius: 4px;
+                     color: #1d4ed8; font-size: 13px; }
+        .method { display: inline-block; padding: 2px 8px; border-radius: 4px;
+                  font-size: 12px; font-weight: 600; color: #fff; margin-right: 8px; }
+        .get { background: #10b981; }
+        .post { background: #f59e0b; }
+        .put { background: #3b82f6; }
+        .delete { background: #ef4444; }
+        .links { margin-top: 12px; }
+        .links a { color: #1d4ed8; text-decoration: none; font-size: 13px; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>ID Card Management System</h1>
+    <p class="subtitle">Manage student and employee ID cards with QR codes, barcodes, and PDF export</p>
+
+    <div class="endpoints">
+        <div class="card">
+            <h3>📋 Profiles API</h3>
+            <p>CRUD operations for user/student/employee profiles</p>
+            <div><span class="method get">GET</span> <code>/profiles</code> - List all profiles</div>
+            <div><span class="method get">GET</span> <code>/profiles/{id}</code> - Get profile by ID</div>
+            <div><span class="method get">GET</span> <code>/profiles/uuid/{uuid}</code> - Get profile by UUID</div>
+            <div><span class="method get">GET</span> <code>/profiles/search?name=&department=&type=</code> - Search profiles</div>
+            <div><span class="method post">POST</span> <code>/profiles</code> - Create profile</div>
+            <div><span class="method put">PUT</span> <code>/profiles/{id}</code> - Update profile</div>
+            <div><span class="method delete">DELETE</span> <code>/profiles/{id}</code> - Delete profile</div>
+            <div><span class="method post">POST</span> <code>/profiles/{id}/photo</code> - Upload photo</div>
+            <div><span class="method get">GET</span> <code>/profiles/{id}/photo</code> - Download photo</div>
+        </div>
+
+        <div class="card">
+            <h3>🆔 ID Cards</h3>
+            <p>Live preview, PDF export, QR codes, and barcodes</p>
+            <div><span class="method get">GET</span> <code>/id-cards/preview/{id}</code> - Live preview ID card</div>
+            <div><span class="method get">GET</span> <code>/id-cards/pdf/{id}</code> - Download PDF</div>
+            <div><span class="method post">POST</span> <code>/id-cards/pdf/batch</code> - Batch PDF generation</div>
+            <div><span class="method get">GET</span> <code>/id-cards/qr/{profileId}</code> - Get QR code image</div>
+            <div><span class="method get">GET</span> <code>/id-cards/barcode/{profileId}</code> - Get barcode image</div>
+        </div>
+
+        <div class="card">
+            <h3>🎨 Templates API</h3>
+            <p>Manage ID card templates (colors, organization name, tagline)</p>
+            <div><span class="method get">GET</span> <code>/templates</code> - List all templates</div>
+            <div><span class="method get">GET</span> <code>/templates/{id}</code> - Get template by ID</div>
+            <div><span class="method get">GET</span> <code>/templates/search?name=</code> - Search templates</div>
+            <div><span class="method post">POST</span> <code>/templates</code> - Create template</div>
+            <div><span class="method put">PUT</span> <code>/templates/{id}</code> - Update template</div>
+            <div><span class="method delete">DELETE</span> <code>/templates/{id}</code> - Delete template</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>🚀 Quick Start</h3>
+        <ol style="color: #6b7280; font-size: 14px; line-height: 2; padding-left: 20px;">
+            <li>Create a profile: <code>curl -X POST http://localhost:8091/profiles -H "Content-Type: application/json" -d '{"fullName":"John Doe","title":"Engineer","type":"STUDENT"}'</code></li>
+            <li>View ID card: <a href="/id-cards/preview/1">http://localhost:8091/id-cards/preview/1</a></li>
+            <li>Download PDF: <a href="/id-cards/pdf/1">http://localhost:8091/id-cards/pdf/1</a></li>
+        </ol>
+    </div>
+</div>
+</body>
+</html>

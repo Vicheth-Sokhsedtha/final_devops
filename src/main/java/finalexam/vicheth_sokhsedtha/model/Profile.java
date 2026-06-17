@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "profiles",
@@ -89,6 +90,9 @@ public class Profile {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID().toString();
+        }
         if (this.issueDate == null) {
             this.issueDate = LocalDate.now();
         }

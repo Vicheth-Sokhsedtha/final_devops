@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">ID Card System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar" th:fragment="navbar(activePage)">
+    <a href="/web/profiles" class="brand">🎴 ID Card System</a>
+    <ul class="nav-links">
+        <li><a href="/web/profiles" th:classappend="${activePage == 'profiles'} ? 'active' : ''">Profiles</a></li>
+        <li><a href="/web/templates" th:classappend="${activePage == 'templates'} ? 'active' : ''">Templates</a></li>
+        <li><a href="/web/id-cards" th:classappend="${activePage == 'idcards'} ? 'active' : ''">ID Cards</a></li>
+        <li><a href="/web/id-cards/batch" th:classappend="${activePage == 'batch'} ? 'active' : ''">Batch</a></li>
+    </ul>
+</nav>
+</body>
+</html>
+</write_to_file>

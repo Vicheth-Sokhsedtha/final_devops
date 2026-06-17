@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Template Form - ID Card System')}"></head>
+<body>
+
+<nav th:replace="~{fragments/header :: navbar('templates')}"></nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1 th:if="${template.id == null}">Create Template</h1>
+            <h1 th:unless="${template.id == null}">Edit Template</h1>
+            <p class="subtitle">Customize colors, organization name, and tagline for ID cards</p>
+        </div>
+        <a href="/web/templates" class="btn btn-outline">← Back</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}">Success</div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" th:action="${template.id == null} ? '/web/templates/create' : '/web/templates/edit/' + ${template.id}">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Template Name *</label>
+                        <input type="text" name="name" class="form-control" th:value="${template.name}" placeholder="School Default" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Template Code</label>
+                        <input type="text" name="code" class="form-control" th:value="${template.code}" placeholder="DEFAULT" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Organization Name *</label>
+                    <input type="text" name="organizationName" class="form-control" th:value="${template.organizationName}" placeholder="University of Phnom Penh" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Tagline</label>
+                    <input type="text" name="tagline" class="form-control" th:value="${template.tagline}" placeholder="Excellence in Education" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Primary Color</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="color" name="primaryColor" class="form-control" th:value="${template.primaryColor}" style="width: 60px; height: 40px; padding: 2px;" />
+                            <input type="text" name="primaryColor" class="form-control" th:value="${template.primaryColor}" placeholder="#1d4ed8" style="flex: 1;" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Secondary Color</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="color" name="secondaryColor" class="form-control" th:value="${template.secondaryColor}" style="width: 60px; height: 40px; padding: 2px;" />
+                            <input type="text" name="secondaryColor" class="form-control" th:value="${template.secondaryColor}" placeholder="#e0e7ff" style="flex: 1;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Text Color</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="color" name="textColor" class="form-control" th:value="${template.textColor}" style="width: 60px; height: 40px; padding: 2px;" />
+                        <input type="text" name="textColor" class="form-control" th:value="${template.textColor}" placeholder="#ffffff" style="flex: 1;" />
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <span th:text="${template.id == null} ? 'Create Template' : 'Update Template'">Save</span>
+                    </button>
+                    <a href="/web/templates" class="btn btn-outline btn-lg">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-header" style="margin-top: 32px; border-top: 2px solid var(--border);">Preview</div>
+        <div class="card-body" style="display: flex; justify-content: center; padding: 32px;">
+            <div class="id-card-preview" id="preview-card"
+                 th:style="'--primary: ' + (${template.primaryColor} ?: '#1d4ed8') + '; --primary-dark: #1e40af; --secondary: ' + (${template.secondaryColor} ?: '#e0e7ff') + ';'">
+                <div class="card-header" th:style="'background: linear-gradient(135deg, ' + (${template.primaryColor} ?: '#1d4ed8') + ', #1e40af);'">
+                    <div class="org-name" th:text="${template.organizationName ?: 'Organization Name'}">Organization</div>
+                    <div class="tagline" th:text="${template.tagline ?: 'Tagline'}">Tagline</div>
+                </div>
+                <div class="card-body">
+                    <div class="photo-section">
+                        <div class="photo-placeholder">J</div>
+                        <div class="name-section">
+                            <h2>John Doe</h2>
+                            <div class="title-text">Engineer</div>
+                        </div>
+                    </div>
+                    <div class="details">
+                        <div class="detail-row"><span class="label">Reg No.</span><span class="value">REG-001</span></div>
+                        <div class="detail-row"><span class="label">Dept.</span><span class="value">Engineering</span></div>
+                        <div class="detail-row"><span class="label">Type</span><span class="value">STUDENT</span></div>
+                        <div class="detail-row"><span class="label">Issue</span><span class="value">01 Jan 2026</span></div>
+                        <div class="detail-row"><span class="label">Expiry</span><span class="value">01 Jan 2029</span></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>ID: abcd1234</span>
+                    <span>2026-01-01</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input[name="primaryColor"], input[name="secondaryColor"], input[name="organizationName"], input[name="tagline"]').forEach(el => {
+        el.addEventListener('input', function() {
+            const preview = document.getElementById('preview-card');
+            if (!preview) return;
+            const primary = document.querySelector('input[name="primaryColor"]')?.value || '#1d4ed8';
+            const secondary = document.querySelector('input[name="secondaryColor"]')?.value || '#e0e7ff';
+            const orgName = document.querySelector('input[name="organizationName"]')?.value || 'Organization Name';
+            const tagline = document.querySelector('input[name="tagline"]')?.value || 'Tagline';
+            preview.style.setProperty('--primary', primary);
+            preview.style.setProperty('--secondary', secondary);
+            const header = preview.querySelector('.card-header');
+            if (header) {
+                header.style.background = 'linear-gradient(135deg, ' + primary + ', #1e40af)';
+                const orgEl = header.querySelector('.org-name');
+                const tagEl = header.querySelector('.tagline');
+                if (orgEl) orgEl.textContent = orgName;
+                if (tagEl) tagEl.textContent = tagline;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+</write_to_file>

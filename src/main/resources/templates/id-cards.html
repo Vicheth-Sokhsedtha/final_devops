@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('ID Cards - ID Card System')"></head>
+<body>
+
+<nav th:replace="fragments/header :: navbar('idcards')"></nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>ID Cards</h1>
+            <p class="subtitle">Generate and preview ID cards for profiles</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <a href="/web/id-cards/batch" class="btn btn-primary">📦 Batch Generate</a>
+        </div>
+    </div>
+
+    <div class="grid-3" th:if="${not #lists.isEmpty(profiles)}">
+        <div class="card" th:each="profile : ${profiles}">
+            <div class="card-body" style="padding: 16px;">
+                <!-- Mini ID Card Preview -->
+                <div class="id-card-preview" style="width: 100%; margin-bottom: 12px;"
+                     th:style="'--primary: ' + (${profile.template != null} ? ${profile.template.primaryColor} : '#1d4ed8') + '; --primary-dark: #1e40af; --secondary: ' + (${profile.template != null} ? ${profile.template.secondaryColor} : '#e0e7ff') + ';'">
+                    <div class="card-header" style="padding: 16px 16px 10px;"
+                         th:style="'background: linear-gradient(135deg, ' + (${profile.template != null} ? ${profile.template.primaryColor} : '#1d4ed8') + ', #1e40af); padding: 16px 16px 10px;'">
+                        <div class="org-name" style="font-size: 13px;"
+                             th:text="${profile.template != null ? profile.template.organizationName : 'Organization'}">Org</div>
+                        <div class="tagline" style="font-size: 10px;"
+                             th:text="${profile.template != null ? profile.template.tagline : ''}">Tagline</div>
+                    </div>
+                    <div class="card-body" style="padding: 12px;">
+                        <div class="photo-section" style="margin-bottom: 10px;">
+                            <div class="photo-placeholder" style="width: 50px; height: 50px; font-size: 18px;">
+                                <span th:text="${#strings.substring(profile.fullName, 0, 1)}">A</span>
+                            </div>
+                            <div class="name-section">
+                                <h2 style="font-size: 14px;" th:text="${profile.fullName}">Name</h2>
+                                <div class="title-text" style="font-size: 11px;" th:text="${profile.title}">Title</div>
+                            </div>
+                        </div>
+                        <div class="details" style="gap: 4px;">
+                            <div class="detail-row" style="font-size: 11px;">
+                                <span class="label" style="min-width: 55px;">Reg No.</span>
+                                <span class="value" th:text="${profile.registrationNumber}">REG-001</span>
+                            </div>
+                            <div class="detail-row" style="font-size: 11px;">
+                                <span class="label" style="min-width: 55px;">Type</span>
+                                <span class="badge" style="font-size: 10px; padding: 1px 8px;"
+                                      th:classappend="${profile.type.name() == 'STUDENT'} ? 'badge-student' : 
+                                                       (${profile.type.name() == 'EMPLOYEE'} ? 'badge-employee' : 'badge-user')"
+                                      th:text="${profile.type}">STUDENT</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="padding: 8px 12px; font-size: 9px;">
+                        <span th:text="'ID: ' + ${#strings.substring(profile.uuid, 0, 6)}">ID: abc123</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 6px; justify-content: center;">
+                    <a th:href="@{'/id-cards/preview/' + ${profile.id}}" class="btn btn-primary btn-sm" target="_blank">👁 Preview</a>
+                    <a th:href="@{'/id-cards/pdf/' + ${profile.id}}" class="btn btn-success btn-sm" target="_blank">📄 PDF</a>
+                    <a th:href="@{'/web/profiles/edit/' + ${profile.id}}" class="btn btn-warning btn-sm">✏ Edit</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(profiles)}">
+        <div class="icon">🆔</div>
+        <h3>No ID cards to display</h3>
+        <p>Create a profile first to generate ID cards with QR codes and barcodes.</p>
+        <a href="/web/profiles/create" class="btn btn-primary">Create Profile</a>
+    </div>
+</div>
+
+</body>
+</html>
+</write_to_file>

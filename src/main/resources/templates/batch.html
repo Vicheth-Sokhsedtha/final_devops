@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Batch Generation - ID Card System')"></head>
+<body>
+
+<nav th:replace="fragments/header :: navbar('batch')"></nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>📦 Batch ID Card Generation</h1>
+            <p class="subtitle">Generate multiple ID cards at once for teams, classes, or employee groups</p>
+        </div>
+        <a href="/web/id-cards" class="btn btn-outline">← Back</a>
+    </div>
+
+    <div class="card" th:if="${not #lists.isEmpty(profiles)}">
+        <div class="card-header">Select Profiles to Generate</div>
+        <div class="card-body">
+            <form id="batchForm" method="post" action="/id-cards/pdf/batch">
+                <div class="alert alert-info">
+                    <strong>💡 Tip:</strong> Select the profiles you want to include in the batch PDF generation. All selected profiles will be merged into a single PDF document.
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label class="checkbox-item" style="display: inline-flex; background: transparent; border: none; padding: 0; cursor: pointer;">
+                        <input type="checkbox" id="selectAll" onchange="toggleAll(this)" />
+                        <strong>Select All</strong>
+                    </label>
+                    <span style="color: var(--text-light); font-size: 13px; margin-left: 12px;" id="selectedCount">0 selected</span>
+                </div>
+
+                <div class="checkbox-grid">
+                    <div class="checkbox-item" th:each="profile : ${profiles}">
+                        <input type="checkbox" name="ids" th:value="${profile.id}" class="profile-checkbox"
+                               onchange="updateCount()" />
+                        <div>
+                            <strong th:text="${profile.fullName}">John Doe</strong>
+                            <div style="font-size: 12px; color: var(--text-light);">
+                                <span th:text="${profile.registrationNumber}">REG-001</span>
+                                <span> • </span>
+                                <span class="badge" style="font-size: 10px; padding: 1px 8px;"
+                                      th:classappend="${profile.type.name() == 'STUDENT'} ? 'badge-student' : 
+                                                       (${profile.type.name() == 'EMPLOYEE'} ? 'badge-employee' : 'badge-user')"
+                                      th:text="${profile.type}">STUDENT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success btn-lg" id="generateBtn" disabled>
+                        📄 Generate Batch PDF
+                    </button>
+                    <button type="button" class="btn btn-outline btn-lg" onclick="window.location.href='/web/id-cards'">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${#lists.isEmpty(profiles)}">
+        <div class="icon">📦</div>
+        <h3>No profiles available</h3>
+        <p>You need to create profiles first before you can generate batch ID cards.</p>
+        <a href="/web/profiles/create" class="btn btn-primary">Create Profile</a>
+    </div>
+</div>
+
+<script>
+    function toggleAll(source) {
+        document.querySelectorAll('.profile-checkbox').forEach(cb => cb.checked = source.checked);
+        updateCount();
+    }
+
+    function updateCount() {
+        const checked = document.querySelectorAll('.profile-checkbox:checked').length;
+        document.getElementById('selectedCount').textContent = checked + ' selected';
+        document.getElementById('generateBtn').disabled = checked === 0;
+    }
+</script>
+
+</body>
+</html>
+</write_to_file>

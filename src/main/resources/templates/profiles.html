@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Profiles - ID Card System')}">
+    <title>Profiles</title>
+</head>
+<body>
+
+<nav th:replace="~{fragments/header :: navbar('profiles')}"></nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Profiles</h1>
+            <p class="subtitle">Manage student, employee, and user profiles</p>
+        </div>
+        <a href="/web/profiles/create" class="btn btn-primary">+ New Profile</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}">Success</div>
+
+    <div class="card">
+        <div class="card-header">All Profiles</div>
+        <div class="card-body">
+            <div class="table-wrapper" th:if="${not #lists.isEmpty(profiles)}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Reg Number</th>
+                            <th>Barcode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="profile : ${profiles}">
+                            <td th:text="${profile.id}">1</td>
+                            <td>
+                                <strong th:text="${profile.fullName}">John Doe</strong>
+                                <div style="font-size: 12px; color: var(--text-light);" th:text="${profile.department}">Dept</div>
+                            </td>
+                            <td th:text="${profile.title}">Engineer</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${profile.type.name() == 'STUDENT'} ? 'badge-student' : 
+                                                       (${profile.type.name() == 'EMPLOYEE'} ? 'badge-employee' : 'badge-user')"
+                                      th:text="${profile.type}">STUDENT</span>
+                            </td>
+                            <td><code th:text="${profile.registrationNumber}">REG-001</code></td>
+                            <td>
+                                <span th:if="${profile.barcodeType != null}" class="badge"
+                                      th:classappend="${profile.barcodeType.name() == 'CODE_128'} ? 'badge-code128' : 'badge-ean13'"
+                                      th:text="${profile.barcodeType}">CODE_128</span>
+                                <span th:unless="${profile.barcodeType != null}" style="color: var(--text-light); font-size: 12px;">—</span>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    <a th:href="@{'/web/profiles/edit/' + ${profile.id}}" class="btn btn-warning btn-sm">Edit</a>
+                                    <a th:href="@{'/id-cards/preview/' + ${profile.id}}" class="btn btn-primary btn-sm" target="_blank">Card</a>
+                                    <a th:href="@{'/id-cards/pdf/' + ${profile.id}}" class="btn btn-success btn-sm" target="_blank">PDF</a>
+                                    <form method="post" th:action="@{'/web/profiles/delete/' + ${profile.id}}" style="display:inline;" onsubmit="return confirm('Delete this profile?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(profiles)}">
+                <div class="icon">👤</div>
+                <h3>No profiles yet</h3>
+                <p>Create your first profile to generate ID cards with QR codes and barcodes.</p>
+                <a href="/web/profiles/create" class="btn btn-primary">Create Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+</write_to_file>

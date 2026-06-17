@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Profile Form - ID Card System')}"></head>
+<body>
+
+<nav th:replace="~{fragments/header :: navbar('profiles')}"></nav>
+
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1 th:if="${profile.id == null}">Create Profile</h1>
+            <h1 th:unless="${profile.id == null}">Edit Profile</h1>
+            <p class="subtitle">Fill in the details to generate an ID card</p>
+        </div>
+        <a href="/web/profiles" class="btn btn-outline">← Back</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}">Success</div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" th:action="${profile.id == null} ? '/web/profiles/create' : '/web/profiles/edit/' + ${profile.id}"
+                  enctype="multipart/form-data">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="fullName" class="form-control" th:value="${profile.fullName}" placeholder="John Doe" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="title" class="form-control" th:value="${profile.title}" placeholder="Software Engineer" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Profile Type *</label>
+                        <select name="type" class="form-control" required>
+                            <option value="">Select type...</option>
+                            <option th:each="t : ${types}" th:value="${t}" th:text="${t}"
+                                    th:selected="${profile.type != null && profile.type.name() == t.name()}">STUDENT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" name="department" class="form-control" th:value="${profile.department}" placeholder="Engineering" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control" th:value="${profile.email}" placeholder="john@example.com" />
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" class="form-control" th:value="${profile.phone}" placeholder="+855 12 345 678" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" name="dateOfBirth" class="form-control" th:value="${profile.dateOfBirth}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Blood Group</label>
+                        <input type="text" name="bloodGroup" class="form-control" th:value="${profile.bloodGroup}" placeholder="O+" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Issue Date</label>
+                        <input type="date" name="issueDate" class="form-control" th:value="${profile.issueDate}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" name="expiryDate" class="form-control" th:value="${profile.expiryDate}" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Registration Number</label>
+                        <input type="text" name="registrationNumber" class="form-control"
+                               th:value="${profile.registrationNumber}" placeholder="Leave blank to auto-generate" />
+                        <small style="color: var(--text-light); font-size: 12px;">Format: YEAR-DEPT-### (e.g., 2026-ENG-001)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Barcode Type</label>
+                        <select name="barcodeType" class="form-control">
+                            <option value="">No barcode</option>
+                            <option th:each="bt : ${barcodeTypes}" th:value="${bt}" th:text="${bt}"
+                                    th:selected="${profile.barcodeType != null && profile.barcodeType.name() == bt.name()}">CODE_128</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Template</label>
+                        <select name="templateId" class="form-control">
+                            <option value="">Default template</option>
+                            <option th:each="t : ${templates}" th:value="${t.id}"
+                                    th:text="${t.name + ' - ' + t.organizationName}"
+                                    th:selected="${profile.template != null && profile.template.id == t.id}">Template</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Photo</label>
+                        <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png" />
+                        <small style="color: var(--text-light); font-size: 12px;" th:if="${profile.hasPhoto()}">
+                            Current: <span th:text="${profile.photoFileName}">photo.jpg</span>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <span th:text="${profile.id == null} ? 'Create Profile' : 'Update Profile'">Save</span>
+                    </button>
+                    <a href="/web/profiles" class="btn btn-outline btn-lg">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+</write_to_file>
