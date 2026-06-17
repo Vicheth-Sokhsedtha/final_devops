@@ -11,7 +11,8 @@ spec:
       image: vicheth-sokhsedtha-web:latest
       imagePullPolicy: IfNotPresent
       ports:
-        - containerPort: 8080   # Nginx listening on 8080 proxying to Spring Boot on 8080
+        - containerPort: 8080   # Nginx listening on 8080 proxying to Spring Boot
+        - containerPort: 8443   # HTTPS
         - containerPort: 2222   # SSH
       env:
         - name: SPRING_DATASOURCE_URL
