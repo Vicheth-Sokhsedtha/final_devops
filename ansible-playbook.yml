@@ -1,0 +1,56 @@
+---
+- name: Deploy and test Spring Boot application on web-server
+  hosts: webserver
+  vars:
+    repo_dir: /app/repo
+    mysql_host: "mysql"
+    mysql_db: "B-Vicheth_Sokhsedtha-db"
+    mysql_user: "root"
+    mysql_password: "Hello@123"
+    ansible_ssh_pass: "123"
+
+  tasks:
+    - name: Ensure git is installed
+      apt:
+        name: git
+        state: present
+      become: yes
+
+    - name: Clone or pull repository
+      git:
+        repo: https://github.com/Vicheth-Sokhsedtha/final_devops.git
+        dest: "{{ repo_dir }}"
+        force: yes
+
+    - name: Build Spring Boot application with Maven
+      command: mvn clean package -DskipTests=false
+      args:
+        chdir: "{{ repo_dir }}"
+
+    - name: Run tests with SQLite test database
+      command: mvn test
+      args:
+        chdir: "{{ repo_dir }}"
+      register: test_output
+
+    - name: Display test results
+      debug:
+        var: test_output.stdout_lines
+
+    - name: Backup MySQL database
+      shell: |
+        mysqldump -h {{ mysql_host }} -u {{ mysql_user }} -p{{ mysql_password }} {{ mysql_db }} > {{ repo_dir }}/backup.sql
+      register: backup_result
+
+    - name: Display backup result
+      debug:
+        var: backup_result.stdout_lines
+
+    - name: Show backup.sql exists
+      stat:
+        path: "{{ repo_dir }}/backup.sql"
+      register: backup_file
+
+    - name: Print backup file details
+      debug:
+        var: backup_file
