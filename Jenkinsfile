@@ -23,16 +23,16 @@ pipeline {
                 script {
                     try {
                         // Clean build and run all tests
-                        sh 'mvn clean package -DskipTests=false'
+                        bat 'mvn clean package -DskipTests=false'
 
                         // Run tests explicitly with test profile (SQLite)
-                        sh 'mvn test'
+                        bat 'mvn test'
 
-                        echo '✔ Build and all tests passed successfully.'
+                        echo 'Build and all tests passed successfully.'
                     } catch (Exception e) {
                         // Get the email of the developer who committed the last change
-                        def developerEmail = sh(
-                            script: 'git log -1 --format="%ae"',
+                        def developerEmail = bat(
+                            script: 'git log -1 --format="%%ae"',
                             returnStdout: true
                         ).trim()
 
@@ -73,8 +73,8 @@ Error Details: ${e.message}
             steps {
                 script {
                     echo 'Running Ansible Playbook to deploy to Web Server...'
-                    sh 'ansible-playbook -i inventory.ini ansible-playbook.yml'
-                    echo '✔ Deployment completed successfully!'
+                    bat 'ansible-playbook -i inventory.ini ansible-playbook.yml'
+                    echo 'Deployment completed successfully!'
                 }
             }
         }
@@ -82,10 +82,10 @@ Error Details: ${e.message}
 
     post {
         success {
-            echo '✔ Pipeline completed successfully: Build → Test → Deploy'
+            echo 'Pipeline completed successfully: Build -> Test -> Deploy'
         }
         failure {
-            echo '✗ Pipeline failed. Check logs and email notifications for details.'
+            echo 'Pipeline failed. Check logs and email notifications for details.'
         }
     }
 }
